@@ -3,81 +3,152 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TaskFlow — Register</title>
+  <title>TaskFlow · Create Account</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
 </head>
 <body class="auth-body">
-  <div class="auth-bg">
-    <div class="auth-orb orb-1"></div>
-    <div class="auth-orb orb-2"></div>
-    <div class="auth-orb orb-3"></div>
-  </div>
 
-  <div class="auth-container">
-    <div class="auth-card glass-card">
-      <div class="auth-logo">
-        <div class="logo-mark">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <rect width="32" height="32" rx="10" fill="url(#lg2)"/>
-            <path d="M8 16l5 5 11-11" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <defs>
-              <linearGradient id="lg2" x1="0" y1="0" x2="32" y2="32">
-                <stop stop-color="#6C63FF"/>
-                <stop offset="1" stop-color="#3ECFCF"/>
-              </linearGradient>
-            </defs>
-          </svg>
+  <div class="auth-grid-bg"></div>
+  <div class="auth-glow auth-glow-1"></div>
+  <div class="auth-glow auth-glow-2"></div>
+
+  <div class="auth-wrapper">
+    <div class="auth-panel">
+
+      <div class="auth-logo-row">
+        <div class="auth-logo-icon">
+          <i class="bi bi-check2-square"></i>
         </div>
-        <span class="logo-text">TaskFlow</span>
+        <span class="auth-logo-text">TaskFlow</span>
       </div>
 
-      <h1 class="auth-title">Create account</h1>
-      <p class="auth-subtitle">Start managing tasks smarter</p>
+      <div class="auth-heading">
+        <h1>Create account</h1>
+        <p>Start organising your work today</p>
+      </div>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           {% for category, message in messages %}
-            <div class="alert auth-alert alert-{{ 'danger' if category == 'error' else 'success' }}">
-              {{ message }}
-            </div>
+          <div class="auth-flash auth-flash-{{ 'error' if category == 'error' else 'success' }}">
+            <i class="bi bi-{{ 'exclamation-circle' if category == 'error' else 'check-circle' }} me-2"></i>
+            {{ message }}
+          </div>
           {% endfor %}
         {% endif %}
       {% endwith %}
 
-      <form action="/register" method="POST" id="registerForm">
-        <div class="form-group-float mb-4">
-          <input type="text" class="form-control auth-input" id="username" name="username" placeholder=" " required/>
+      <form action="/register" method="POST" id="registerForm" novalidate>
+
+        <div class="auth-field">
           <label for="username">Full name</label>
+          <div class="auth-input-wrap">
+            <i class="bi bi-person auth-field-icon"></i>
+            <input type="text" id="username" name="username" placeholder="Jane Smith"
+                   autocomplete="name" required minlength="2"/>
+          </div>
         </div>
-        <div class="form-group-float mb-4">
-          <input type="email" class="form-control auth-input" id="email" name="email" placeholder=" " required/>
-          <label for="email">Email address</label>
+
+        <div class="auth-field">
+          <label for="email">Email</label>
+          <div class="auth-input-wrap">
+            <i class="bi bi-envelope auth-field-icon"></i>
+            <input type="email" id="email" name="email" placeholder="you@example.com"
+                   autocomplete="email" required/>
+          </div>
         </div>
-        <div class="form-group-float mb-4">
-          <input type="password" class="form-control auth-input" id="password" name="password" placeholder=" " required minlength="6"/>
-          <label for="password">Password</label>
+
+        <div class="auth-field">
+          <label for="password">Password <span class="auth-hint">(min 6 chars)</span></label>
+          <div class="auth-input-wrap">
+            <i class="bi bi-lock auth-field-icon"></i>
+            <input type="password" id="password" name="password" placeholder="••••••••"
+                   autocomplete="new-password" required minlength="6"/>
+            <button type="button" class="auth-eye-toggle" onclick="togglePwd('password', this)">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+          <!-- Strength bar -->
+          <div class="pwd-strength-bar">
+            <div class="pwd-strength-fill" id="pwdStrengthFill"></div>
+          </div>
+          <div class="pwd-strength-label" id="pwdStrengthLabel"></div>
         </div>
-        <button type="submit" class="btn auth-btn w-100">
-          <span class="btn-text">Create Account</span>
-          <span class="btn-loader d-none">
+
+        <button type="submit" class="auth-submit-btn" id="registerBtn">
+          <span class="btn-label">Create Account</span>
+          <span class="btn-spinner d-none">
             <span class="spinner-border spinner-border-sm"></span>
           </span>
+          <i class="bi bi-arrow-right btn-arrow"></i>
         </button>
       </form>
 
-      <p class="auth-footer">
-        Already have an account? <a href="/login" class="auth-link">Sign in</a>
+      <div class="auth-divider"><span>or</span></div>
+
+      <p class="auth-switch">
+        Already have an account?
+        <a href="/login">Sign in <i class="bi bi-arrow-right"></i></a>
       </p>
+
+    </div>
+
+    <div class="auth-side">
+      <div class="auth-side-content">
+        <div class="side-badge">Free</div>
+        <h2>Everything you need <em>in one place</em></h2>
+        <p>Tasks, analytics, real-time collaboration — all connected to your PostgreSQL backend.</p>
+        <ul class="side-features">
+          <li><i class="bi bi-check2-circle"></i> Task creation &amp; management</li>
+          <li><i class="bi bi-check2-circle"></i> Live WebSocket notifications</li>
+          <li><i class="bi bi-check2-circle"></i> Analytics dashboard</li>
+          <li><i class="bi bi-check2-circle"></i> Priority &amp; status tracking</li>
+        </ul>
+      </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    document.getElementById('registerForm').addEventListener('submit', function() {
-      this.querySelector('.btn-text').classList.add('d-none');
-      this.querySelector('.btn-loader').classList.remove('d-none');
+    function togglePwd(id, btn) {
+      const inp  = document.getElementById(id);
+      const icon = btn.querySelector('i');
+      inp.type   = inp.type === 'password' ? 'text' : 'password';
+      icon.className = inp.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+    }
+
+    // Password strength
+    document.getElementById('password').addEventListener('input', function () {
+      const val    = this.value;
+      const fill   = document.getElementById('pwdStrengthFill');
+      const label  = document.getElementById('pwdStrengthLabel');
+      let score    = 0;
+      if (val.length >= 6)  score++;
+      if (val.length >= 10) score++;
+      if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+      const levels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+      const colors = ['', '#ef4444', '#f59e0b', '#22c55e', '#10b981'];
+      const pcts   = ['0%', '25%', '50%', '75%', '100%'];
+      fill.style.width      = pcts[score];
+      fill.style.background = colors[score];
+      label.textContent     = val.length ? levels[score] : '';
+      label.style.color     = colors[score];
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', function (e) {
+      const name = document.getElementById('username').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const pwd  = document.getElementById('password').value;
+      if (!name || !email || pwd.length < 6) { e.preventDefault(); return; }
+      const btn = document.getElementById('registerBtn');
+      btn.querySelector('.btn-label').classList.add('d-none');
+      btn.querySelector('.btn-arrow').classList.add('d-none');
+      btn.querySelector('.btn-spinner').classList.remove('d-none');
+      btn.disabled = true;
     });
   </script>
 </body>

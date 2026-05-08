@@ -9,8 +9,11 @@ def register_analytics_routes(app):
     @app.route("/analytics", methods=["GET"])
     def analytics():
 
-        tasks = Task.query.all()
+        from flask import session
 
+        user_id = session.get("user_id")
+
+        tasks = Task.query.filter_by(user_id=user_id).all()
         task_data = []
 
         for task in tasks:
